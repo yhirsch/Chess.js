@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chessboard</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+            .cell {
+                height: 50px;
+                width: 50px;
+                border: 2px solid black;
+                margin: 20px;
+                border-color: black;
+            }
+                .cube1 {
+                   
+    width: 50px;
+    height: 50px;
+    background-color: rgb(37, 9, 9);
+      font-size:25px;
+    text-align:center;
+    display: table-cell;
+    vertical-align:middle;
+}
+                
+
+                .cube2 {
+                  
+    width: 50px;
+    height: 50px;
+    background-color: rgb(251, 244, 244);
+    font: size 25px;
+    text-align:center;
+    display: table-cell;
+    vertical-align:middle;
+                }
+    </style>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        var center = document.createElement('center');
+
+        var ChessTable = document.createElement('table');
+        for (var i = 0; i < 8; i++) {
+
+            var tr = document.createElement('tr');
+            for (var y = 0; y < 8; y++) {
+                var td = document.createElement('td')
+
+                if ((i + y) % 2 == 0) {
+                    td.setAttribute('class', 'cell cube2');
+                    tr.appendChild(td);
+                }
+            
+
+                    else {
+                        td.setAttribute('class', 'cell cube1');
+                        tr.appendChild(td);
+                    }
+                }
+                        ChessTable.appendChild(tr);
+                    }
+        center.appendChild(ChessTable);
+
+        ChessTable.setAttribute('cellspacing', '0');
+        ChessTable.setAttribute('width', '500px');
+        document.body.appendChild(center);
+    </script>
+</body>
+
+</html>
+            
