@@ -34,14 +34,7 @@ function getInitialBoard() {
   result.push(new Piece(0, 5, "bishop", WHITE_PLAYER))
   result.push(new Piece(0, 6, "knight", WHITE_PLAYER))
   result.push(new Piece(0, 7, "rook", WHITE_PLAYER))
-  result.push(new Piece(1, 0, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 1, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 2, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 3, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 4, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 5, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 6, "pawn", WHITE_PLAYER))
-  result.push(new Piece(1, 7, "pawn", WHITE_PLAYER))
+
 
 
 
@@ -53,19 +46,17 @@ function getInitialBoard() {
   result.push(new Piece(7, 5, "bishop", DARK_PLAYER))
   result.push(new Piece(7, 6, "knight", DARK_PLAYER))
   result.push(new Piece(7, 7, "rook", DARK_PLAYER))
-  result.push(new Piece(6, 0, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 1, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 2, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 3, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 4, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 5, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 6, "pawn", DARK_PLAYER))
-  result.push(new Piece(6, 7, "pawn", DARK_PLAYER))
-  console.log(result)
 
 
 
+  debugger
+  for (let i = 0; i < BOARD_SIZE; i++) {
+    result.push(new Piece(1, i, PAWN, WHITE_PLAYER));
+    result.push(new Piece(6, i, PAWN, DARK_PLAYER));
+    console.log(result)
 
+
+  }
 
   return result;
 }
@@ -92,7 +83,7 @@ function addImageByIndex(cell, player, index) {
 }
 
 function onCellClick(event) {
-  if (selectedCell !== undefined) {
+  if (selectedCell) {
     selectedCell.classList.remove('selected');
   }
   selectedCell = event.currentTarget;
