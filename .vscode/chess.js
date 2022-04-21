@@ -14,6 +14,8 @@ const QUEEN = 'queen';
 
 let selectedCell;
 let pieces = [];
+let boardData;
+let table;
 
 class Piece {
   constructor(row, col, type, player) {
@@ -22,6 +24,12 @@ class Piece {
     this.type = type;
     this.player = player;
   }
+  getPossibleMoves() {
+    let relativeMoves;
+    if (this.type === PAWN) {
+      relativeMoves = this.getPawnRelativeMoves();
+    }
+    }
 }
 
 function getInitialBoard() {
@@ -117,6 +125,10 @@ function createChessBoard() {
     addImage(table1.rows[piece.row].cells[piece.col], piece.player, piece.type);
   }
 }
+
+
+
+
 
 window.addEventListener('load', createChessBoard);
 
