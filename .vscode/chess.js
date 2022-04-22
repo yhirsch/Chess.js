@@ -1,137 +1,94 @@
 
 
-const BOARD_SIZE = 8;
-const WHITE_PLAYER = 'white';
-const DARK_PLAYER = 'dark';
+const chessboardParent = document.getElementById("chessboard");
 
-const PAWN = 'pawn';
-const ROOK = 'rook';
-const KNIGHT = 'knight';
-const BISHOP = 'bishop';
-const KING = 'king';
-const QUEEN = 'queen';
+// Chess Game
+class Chess {
+	constructor() {
+		this.setDefault();
+	}
 
+	// set chess info as default
+	setDefault() {
+		this.info = {
+		
+		};
 
-let selectedCell;
-let pieces = [];
-let boardData;
-let table;
+		this.data = {
+			players: [], 
+			board: null,
+		};
+	}
 
-class Piece {
-  constructor(row, col, type, player) {
-    this.row = row;
-    this.col = col;
-    this.type = type;
-    this.player = player;
-  }
-  getPossibleMoves() {
-    let relativeMoves;
-    if (this.type === PAWN) {
-      relativeMoves = this.getPawnRelativeMoves();
-    }
-    }
-}
+	// initialize game
+	async init(callback) {
+		// create new board
+		this.data.board = new Board(this);
+		// then create board elements
+		this.data.board.create();
 
-function getInitialBoard() {
-  let result = [];
-  result.push(new Piece(0, 0, "rook", WHITE_PLAYER))
-  result.push(new Piece(0, 1, "knight", WHITE_PLAYER))
-  result.push(new Piece(0, 2, "bishop", WHITE_PLAYER))
-  result.push(new Piece(0, 3, "king", WHITE_PLAYER))
-  result.push(new Piece(0, 4, "queen", WHITE_PLAYER))
-  result.push(new Piece(0, 5, "bishop", WHITE_PLAYER))
-  result.push(new Piece(0, 6, "knight", WHITE_PLAYER))
-  result.push(new Piece(0, 7, "rook", WHITE_PLAYER))
+	
+		await this.assignPlayers();
 
+		// make sure that players is ready
+		await this.data.players[0].init(this);
+		await this.data.players[1].init(this);
 
+		callback && callback.call(this);
+	}
 
+	// assign players (player1,player2)
+//add assign players
 
-  result.push(new Piece(7, 0, "rook", DARK_PLAYER))
-  result.push(new Piece(7, 1, "knight", DARK_PLAYER))
-  result.push(new Piece(7, 2, "bishop", DARK_PLAYER))
-  result.push(new Piece(7, 3, "king", DARK_PLAYER))
-  result.push(new Piece(7, 4, "queen", DARK_PLAYER))
-  result.push(new Piece(7, 5, "bishop", DARK_PLAYER))
-  result.push(new Piece(7, 6, "knight", DARK_PLAYER))
-  result.push(new Piece(7, 7, "rook", DARK_PLAYER))
+	// game start
+	start() {
+		this.info.started = true;
+		this.info.ended = false;
+		this.info.won = false;
+
+		this.data.board.placePiecesAsDefault();
+		
+	}
 
 
 
-  debugger
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    result.push(new Piece(1, i, PAWN, WHITE_PLAYER));
-    result.push(new Piece(6, i, PAWN, DARK_PLAYER));
-    console.log(result)
+	// end the game
+	checkmate(player) {
+		this.info.started = false;
+		this.info.ended = true;
+		this.info.won = player;
 
+		console.log(`${this.info.turn.data.username} is Mate`);
 
-  }
+		this.winner();
+	}
 
-  return result;
-}
+	updatePlayers() {
+		this.data.players.forEach((player) => player.update());
+	}
 
-function addImage(cell, player, name) {
-  debugger
-  const image = document.createElement('img');
-  image.src = 'images/' + player + '/' + name + '.png';
-  cell.appendChild(image);
-}
+	checkedPlayer() {
+		const players = this.data.players;
+		return players.filter((player) => {
+			return player.info.isChecked == true;
+		})[0];
+	}
 
-function addImageByIndex(cell, player, index) {
-  if (index === 0 || index === 7) {
-    addImage(cell, player, 'rook');
-  } else if (index === 1 || index === 6) {
-    addImage(cell, player, 'knight');
-  } else if (index === 2 || index === 5) {
-    addImage(cell, player, 'bishop');
-  } else if (index === 3) {
-    addImage(cell, player, 'king');
-  } else if (index === 4) {
-    addImage(cell, player, 'queen');
-  }
-}
+	// change turning player
+	changeTurn() {
+		const turn = this.info.turn;
+		const players = this.data.players;
+		this.info.turn = players.filter((p, index) => {
+			return players.indexOf(turn) != index;
+		})[0];
+	}
 
-function onCellClick(event) {
-  if (selectedCell) {
-    selectedCell.classList.remove('selected');
-  }
-  selectedCell = event.currentTarget;
-  selectedCell.classList.add('selected');
-}
-
-function createChessBoard() {
-  const table1 = document.createElement('table');
-  document.body.appendChild(table1);
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    const row = table1.insertRow();
-    for (let j = 0; j < BOARD_SIZE; j++) {
-      const cell = row.insertCell();
-      cell.id = "cell-" + i.toString() + "_" + j.toString();
-      if ((i + j) % 2 === 0) {
-        cell.className = 'light-cell';
-      } else {
-        cell.className = 'dark-cell';
-      }
-      cell.addEventListener('click', onCellClick);
-    }
-
-
-  }
-
-
-
-  pieces = getInitialBoard();
-
-  for (let piece of pieces) {
-    addImage(table1.rows[piece.row].cells[piece.col], piece.player, piece.type);
-  }
-}
-
-
-
-
-
-window.addEventListener('load', createChessBoard);
-
-
+	// switch player into another player
+	switchTurn(player) {
+		const players = this.data.players;
+		return players.filter((p, index) => {
+			return players.indexOf(player) != index;
+		})[0];
+	}
 
 
