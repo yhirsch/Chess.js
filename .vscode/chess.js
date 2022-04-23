@@ -370,7 +370,7 @@ class Piece {
       const mousemove = function (event) {
         move(event.pageX, event.pageY); // move the piece in mouse position
 
-        element.hidden = true; // hide the element so it will not affect searching point
+        element.hidden = true; 
         elemBelow = document.elementFromPoint(event.clientX, event.clientY); // search from point x and y
         element.hidden = false; // then show again
 
@@ -625,11 +625,11 @@ class Player {
       ...player, // rewrite player information
       total_moves: 0, // all the moves
       piecesData: {}, // data pieces
-      pieces: [], 
-      dropped: [], 
-      eated: [], 
-      enemies: [], 
-      currentPiece: null, 
+      pieces: [],
+      dropped: [],
+      eated: [],
+      enemies: [],
+      currentPiece: null,
       card: null,
     };
   }
@@ -688,33 +688,33 @@ class Player {
   }
   //TODO-get and set
   async setPieces() {
-		const player = this;
-		const game = this.game;
-		const pieces = this.data.pieces; // array of class Pieces
-		const piecesData = this.data.piecesData;
-		const set = function (setPieceObj) {
-			// Get Values
-			let { name, length, alias, position } = setPieceObj;
-			let { letter: letters, number } = position;
-			// Loop through their lengths
-			for (let i = 0; i < length; i++) {
-				const position = `${letters[i]}${number}`; // get the position
-				const obj = { name, alias, position, index: i }; // create piece information
-				const piece = new Piece(obj, player, game); // new Piece
-				pieces.push(piece); // insert to the array of class Pieces
-			}
-		};
-		piecesData.forEach(set);
-	}
-	async init(game) {
-		this.game = game; // initialize the game
-		await this.getPieces(); // get all data pieces
-		await this.setPieces(); // set object pieces to class Pieces
-		this.update();
-	}
+    const player = this;
+    const game = this.game;
+    const pieces = this.data.pieces; // array of class Pieces
+    const piecesData = this.data.piecesData;
+    const set = function (setPieceObj) {
+      // Get Values
+      let { name, length, alias, position } = setPieceObj;
+      let { letter: letters, number } = position;
+      // Loop through their lengths
+      for (let i = 0; i < length; i++) {
+        const position = `${letters[i]}${number}`; // get the position
+        const obj = { name, alias, position, index: i }; // create piece information
+        const piece = new Piece(obj, player, game); // new Piece
+        pieces.push(piece); // insert to the array of class Pieces
+      }
+    };
+    piecesData.forEach(set);
+  }
+  async init(game) {
+    this.game = game; // initialize the game
+    await this.getPieces(); // get all data pieces
+    await this.setPieces(); // set object pieces to class Pieces
+    this.update();
+  }
 }
 const Game = new Chess(); // game
 Game.init(function () {
-	this.start();
+  this.start();
 
 }); 
