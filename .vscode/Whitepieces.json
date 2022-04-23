@@ -2,7 +2,7 @@
 	{
 		"name": "Pawn",
 		"length": 8,
-		"alias": "Wp",
+		"alias": "wp",
 		"position": {
 			"letter": ["a", "b", "c", "d", "e", "f", "g", "h"],
 			"number": 2
@@ -11,31 +11,31 @@
 	{
 		"name": "Knight",
 		"length": 2,
-		"alias": "Wn",
+		"alias": "wn",
 		"position": { "letter": ["b", "g"], "number": 1 }
 	},
 	{
 		"name": "Bishop",
 		"length": 2,
-		"alias": "Wb",
+		"alias": "wb",
 		"position": { "letter": ["c", "f"], "number": 1 }
 	},
 	{
 		"name": "Rook",
 		"length": 2,
-		"alias": "Wr",
+		"alias": "wr",
 		"position": { "letter": ["a", "h"], "number": 1 }
 	},
 	{
 		"name": "Queen",
 		"length": 1,
-		"alias": "Wq",
+		"alias": "wq",
 		"position": { "letter": ["d"], "number": 1 }
 	},
 	{
 		"name": "King",
 		"length": 1,
-		"alias": "Wk",
+		"alias": "wk",
 		"position": { "letter": ["e"], "number": 1 }
 	}
 ]
