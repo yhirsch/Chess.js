@@ -777,3 +777,29 @@ class Player {
 			currentPiece: null, 
 		};
 	}
+  analyze() {
+		this.data.moves = []; // empty the array
+		this.data.enemies = []; // empty the array
+		const game = this.game;
+		const turnPlayer = game.info.turn;
+		const pieces = this.data.pieces;
+		const pos = { moves: [], enemies: [] };
+
+		// loop through the pieces
+		for (const piece of pieces) {
+			for (const data of Object.entries(piece.getPossibilities())) {
+				for (const square of data[1]) {
+					if (!square) return;
+					if (!pos[data[0]].includes(square.info.position)) {
+						pos[data[0]].push(square.info.position);
+					}
+				}
+			}
+		}
+
+		this.data.moves = pos.moves; // set the moves
+		this.data.enemies = pos.enemies; // set the enemies
+		this.info.isTurn = turnPlayer.data.username == this.data.username; // if the player is equal to turning player
+
+		return pos;
+	}
