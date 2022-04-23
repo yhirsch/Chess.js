@@ -441,4 +441,339 @@ class Piece {
 				// if it is not the current square
 				if (current != droppableBelow) current = droppableBelow;
 			};
-      
+
+			// when the user drop the piece
+			const drop = function () {
+				// remove first the mousemove event
+				document.removeEventListener("mousemove", mousemove);
+
+				// then assign styles to go back to it's position in square
+				element.removeAttribute("style");
+
+				if (!current) return false;
+				if (game.info.turn != piece.player) return false;
+
+				piece.player.move(piece, current.getAttribute("data-position"));
+			};
+
+			// just setting the styles
+			const setStyle = function () {
+				// set the position to absolute so the image can drag anywhere on the screen
+				element.style.position = "absolute";
+				// set the z index to max so it will go above all elements
+				element.style.zIndex = 1000;
+			};
+
+			// just sets some listeners
+			const manageListener = function () {
+				// drop on mouseup event
+				element.onmouseup = drop;
+
+				// disabled dragging
+				element.ondragstart = function () {
+					return false;
+				};
+
+				// add mousemove listener again
+				document.addEventListener("mousemove", mousemove);
+			};
+
+			// declaration
+			setStyle();
+			manageListener();
+			move(event.pageX, event.pageY);
+
+			if (game.info.turn != piece.player) return false;
+			// get the piece possibilities, values(moves(array), enemies(array), castling(array))
+			// then show circles to all that squares
+			board.setSquarePossibilities(piece.getPossibleSqOnly(), true);
+
+			piece.player.data.currentPiece = piece;
+		};
+
+		// add mousedown listener
+		element.addEventListener("mousedown", mousedown);
+	}
+
+	// get piece possibilites, move, enemies, castling
+	getPossibilities() {
+		const piece = this; // the current piece
+		const square = this.square; // the current square where piece located
+		const player = this.player; // the turning player
+		const role = player.data.role; // player role values(white, black)
+		const game = this.game; // the game
+		const gameboard = game.data.board; // gameboard
+		const board = gameboard.data; // and the board data
+		const pos = { moves: [], enemies: [], castling: [] }; // possibilities object
+		let { x, y } = square.info.boardPosition; // square position into board
+
+		// will check if the piece inside the given square is enemy or not
+		// then if it is push it into enemies pos
+		const testEnemy = function (y, x) {
+			// check if the position is valid
+			if (!gameboard.isValidPos(y, x)) return false;
+
+			const square = board[y][x]; // target square
+			const piece = square.piece; // piece inside the target square
+
+			if (!square || !piece) return false;
+			if (piece.player.data.role == role) return false;
+
+			pos.enemies.push(square);
+		};
+
+		// test the square when piece can be move or there is enemy
+		const testSquare = function (y, x) {
+			// check if the position is valid
+			if (!gameboard.isValidPos(y, x)) return false;
+
+			const square = board[y][x]; // target square
+			const sqpiece = square.piece; // piece inside the target square
+
+			if (!square) return false;
+
+			if (sqpiece) {
+				if (piece.info.name != "Pawn") testEnemy(y, x);
+				return false;
+			} else {
+				pos.moves.push(square);
+				return true;
+			}
+		};
+
+		// test directions and check how long the piece can be move from the board
+		// yi / xi = y/x need to change
+		// yo / xo = what operation, true = addition while false = subtration
+		// un = until (number), how many squares need to check
+		// is = isking, then if it is check for castlings
+		const testLoopSquare = function (yi, yo, xi, xo, un = 8, is) {
+			for (let i = 1; i < un; i++) {
+				const ny = yi ? (yo ? y + i : y - i) : y;
+				const nx = xi ? (xo ? x + i : x - i) : x;
+
+				// check if the position is valid
+				if (!gameboard.isValidPos(ny, nx)) return false;
+
+				const square = board[ny][nx]; // target square
+				const sqpiece = square.piece; // piece inside the target square
+
+				if (square) {
+					if (sqpiece) {
+						// if not pawn then test if there is enemy
+						if (piece.info.name != "Pawn") testEnemy(ny, nx);
+						break;
+					} else if (is && i == 2) {
+						// if isKing then check then run as one only in a loop
+
+						const check = function (condition) {
+							if (condition) pos.castling.push(square);
+						};
+
+						check(rightrook && rightrook.info.name == "Rook");
+						check(leftrook && leftrook.info.name == "Rook");
+					}
+
+					pos.moves.push(square);
+				}
+			}
+		};
+
+const Pattern = {
+			Pawn: function () {
+				// check if pawn can fastpawn then if it is, increment 1 to it's possible move
+				let until = piece.info.fastpawn ? 3 : 2;
+				for (let i = 1; i < until; i++) {
+					if (role == "white") {
+						if (!testSquare(y - i, x)) break;
+					} else {
+						if (!testSquare(y + i, x)) break;
+					}
+				}
+
+				// enemy detection
+				if (role == "white") {
+					//  check the top left and right square from it's position
+					testEnemy(y - 1, x - 1);
+					testEnemy(y - 1, x + 1);
+				} else {
+					//  check the bottom left and right square from it's position
+					testEnemy(y + 1, x - 1);
+					testEnemy(y + 1, x + 1);
+				}
+			},
+
+			Rook: function () {
+				// Top
+				testLoopSquare(true, false, false, false);
+				// Bottom
+				testLoopSquare(true, true, false, false);
+				// Left
+				testLoopSquare(false, false, true, false);
+				// Right
+				testLoopSquare(false, false, true, true);
+			},
+
+			Bishop: function () {
+				testLoopSquare(true, false, true, false);
+				// Bottom Left
+				testLoopSquare(true, true, true, false);
+				// Bottom Right
+				testLoopSquare(true, false, true, true);
+				// Bottom Right
+				testLoopSquare(true, true, true, true);
+			},
+
+			Knight: function () {
+				// Top
+				testSquare(y - 2, x - 1);
+				testSquare(y - 2, x + 1);
+				// Bottom
+				testSquare(y + 2, x - 1);
+				testSquare(y + 2, x + 1);
+				// Left
+				testSquare(y - 1, x - 2);
+				testSquare(y + 1, x - 2);
+				// Right
+				testSquare(y - 1, x + 2);
+				testSquare(y + 1, x + 2);
+			},
+
+			Queen: function () {
+				Pattern.Rook(); // can move like a rook
+				Pattern.Bishop(); // can move like a bishop
+			},
+
+			King: function () {
+				// Top
+				testSquare(y - 1, x);
+				// Bottom
+				testSquare(y + 1, x);
+				// Top Left
+				testSquare(y - 1, x - 1);
+				// Top Right
+				testSquare(y - 1, x + 1);
+				// Bottom Left
+				testSquare(y + 1, x - 1);
+				// Bottom Right
+				testSquare(y + 1, x + 1);
+
+				if (piece.info.castling) {
+					testLoopSquare(false, false, true, true, 3, true);
+					testLoopSquare(false, false, true, false, 3, true);
+				}
+			},
+		};
+
+		// then get the pattern base on their name
+		// and call it
+		Pattern[this.info.name].call();
+
+		// return possibilities
+		return pos;
+	}
+
+	getPossibleSqOnly() {
+		let { moves, enemies, castling } = this.getPossibilities();
+		const game = this.game;
+
+		const filter = (s) => {
+			return s.filter((sq) => {
+				return game.testMove(this, sq);
+			});
+		};
+
+		game.data.board.resetSquares();
+		moves = filter(moves);
+		enemies = filter(enemies);
+		castling = filter(castling);
+
+		return moves.length || enemies.length || castling.length
+			? { moves, enemies, castling }
+			: false;
+	}
+
+	getAlias() {
+		return `${this.info.alias}${this.info.index}`;
+	}
+}
+
+// Chess Square
+class Square {
+	constructor(boardPosition, position, role, game) {
+		this.info = {
+			boardPosition, // square board position
+			position, // square position
+			role, // square role
+			element: null, // square element
+			isMove: false, // possible move
+			isEnemy: false, // possible enemy
+			isCastle: false, // possible castle
+		};
+
+		this.piece = null; // the piece
+		this.game = game; // the game
+
+		this.init();
+	}
+
+	// initialize and ready
+	init() {
+		this.create(); // create square element
+		this.listener(); // some listeners
+	}
+
+	// create ui
+	create() {
+		const squareElement = document.createElement("DIV"); // new Div element
+		const classname = "chessboard-square"; // element classname
+
+		squareElement.classList.add(classname); // add
+		squareElement.setAttribute("role", this.info.role); // set role
+		squareElement.setAttribute("data-position", this.info.position); // and pos
+
+		chessboardParent.appendChild(squareElement); // append to parent
+		this.info.element = squareElement; // store
+	}
+listener() {
+		const action = function () {
+			const player = this.game.info.turn;
+			const info = this.info;
+			const isQualified = info.isMove || info.isEnemy || info.isCastle;
+			const currentPiece = player.data.currentPiece;
+
+			if (!isQualified || !currentPiece) return false;
+
+			// move the player on the selected squares
+			player.move(currentPiece, this);
+		};
+
+		this.info.element.addEventListener("click", action.bind(this));
+	}
+	setAs(classname, bool, ui) {
+		const element = this.info.element;
+
+		this.info.isEnemy = classname == "enemy" && bool; // if there's enemy on the square
+		this.info.isMove = classname == "move" && bool; // if can possibly move the piece
+		this.info.isCastle = classname == "castling" && bool; // if can castling through that position
+
+		if (!ui) return;
+		// add class if true and remove if false
+		bool
+			? element.classList.add(classname)
+			: element.classList.remove(classname);
+	}
+}
+class Player {
+	constructor(player) {
+		this.info = { 
+		};
+		this.data = {
+			...player, 
+			total_moves: 0, 
+			piecesData: {}, 
+			pieces: [], 
+			dropped: [], 
+			enemies: [], 
+			currentPiece: null, 
+		};
+	}
