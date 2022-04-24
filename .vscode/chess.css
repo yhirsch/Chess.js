@@ -1,74 +1,19 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.light-cell {
+  background: rgb(211, 210, 210);
+  width: 45px;
+  height: 45px;
 }
 
-body {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #312E2B;
+.dark-cell {
+  background: rgb(63, 63, 63);
+  width: 45px;
+  height: 45px;
 }
 
-.chessboard {
-  width: 500px;
-  height: 500px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  border-radius: 25px;
+.selected {
+  background: rgb(183, 103, 4);
 }
 
-.chessboard>.chessboard-square {
-  width: calc(500px / 8);
-  height: calc(500px / 8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.chessboard>.chessboard-square[role="white"] {
-  background: #0a0000;
-}
-
-.chessboard>.chessboard-square[role="black"] {
-  background: #ffffff;
-}
-.chessboard>.chessboard-square::before {
-  content: '';
-  width: 60px;
-  height: 60px;
-  border-radius: 150%;
-  background: #cd350b;
-  position: fixed;
-  opacity: 2.00;
-  visibility: hidden;
-}
-
-.chessboard>.chessboard-square.move::before {
-  visibility: visible;
-}
-
-.chessboard>.chessboard-square.enemy::before {
-  visibility: visible;
-}
-
-.chessboard>.chessboard-square.castling::before {
-  visibility: visible;
-}
-
-.chessboard>.chessboard-square>img.chessboard-piece {
-  max-width: 50px;
-  width: 50px;
-  height: auto;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
-}
-
-.chessboard>.chessboard-square>img.chessboard-piece:active {
-  cursor: crosshair;
+.possible-move {
+  background: rgb(221, 142, 46);
 }
