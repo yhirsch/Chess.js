@@ -1,3 +1,13 @@
+
+body {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #bc8f63;
+}
+
 .light-cell {
   background: rgb(211, 210, 210);
   width: 45px;
